@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="triqui.css">
+	<link rel="stylesheet" type="text/css" href="sweetalert.css">
+</head>
+<body>
+	<div  align="center" >
+	<table>
+
+	 <tr>
+	 <td>
+		<button  id="X"  >
+			<div id="LABELX" style="width: 30px; height: 30px">
+		     <svg   aria-label='X' role='img' viewbox='0 0 128 128' class="classx"  >
+		      <path d='M16,16L112,112' stroke='green' stroke-width='4' ></path> 
+		      <path d='M112,16L16,112' stroke='green' stroke-width='4' ></path>
+		    </svg>
+	       </div>
+		</button> 
+		</td>
+		<td>
+		<button id="O"  >
+		  <div id="LABELO" style="width: 30px; height: 30px">
+			<svg aria-label='O' role='img' viewbox='0 0 128 128' class="classx" >
+             <circle cx="64" cy="64" r="40" stroke="black" stroke-width="3" fill="white" />
+            </svg>
+          </div>
+		</button> 
+		</td>
+		</tr>
+
+	</table>
+	</div> 
+ 	<div align="center" >Turno de <div id="turno"></div></div>
+<div align="center">
+ <table id="table" class="table"  >
+	<tr>
+		<td id="1" class=box></td>
+		<td id="2" class=box></td>
+		<td id="3" class=box></td>
+	</tr>
+	<tr>
+		<td id="4" class=box></td>
+		<td id="5" class=box></td>
+		<td id="6" class=box></td>
+	</tr>
+	<tr> 
+	    <td id="7" class=box></td>
+	    <td id="8" class=box></td>
+	    <td id="9" class=box></td>
+	</tr>
+ </table> 
+</div>
+   <script src="sweetalert.min.js"></script>
+
+	<script> 	
+     var turn;
+     var player;
+     var max_min = [0,0,0,0,0,0,0,0];
+
+
+    // All win combination 
+	 const combinations = [
+			[1,2,3],
+			[1,5,9],
+			[1,4,7],
+			[2,5,8],
+			[3,5,7],
+			[3,6,9],
+			[4,5,6],
+			[7,8,9]
+		];
+
+    // Select the player symbol X or O
+     function addEvent(id){
+     	    el = document.getElementById(id); 
+            el.addEventListener("click",(ev) => {
+            	turn = id;  
+            	player = id;
+            	document.getElementById('turno').innerHTML  = turn;
+            });
+     }
+
+     //Add even listener 
+     addEvent("X");
+     addEvent("O");
+
+
+     const OPTIONS = document.querySelectorAll('[class="box"]')
+     OPTIONS.forEach( (el) => {
+          el.addEventListener("click", (ev) => {
+          	player1(el);
+          })
+       });
+
+
+    function player1(el){  
+      if(turn && turn == player && el.innerHTML == ""){	
+        setSymbol(el);
+        updateArray(el.getAttribute('id')); 
+        nextTurn();
+        setTimeout( () => machinePlayer() ,1500);
+      }
+    }
+
+    //This array contains the max_min Player1 vs Player2
+    function updateArray(id){
+    	 let i = 0;
+    	combinations.forEach( (cmb) => { 
+               if(cmb.includes(parseInt(id))){
+                 max_min[i] += (turn == "X" ) ? -1 : 1;  
+                 if( Math.abs(max_min[i]) == 3 ) {
+                 	paintWin(combinations[i])
+                 	player = '';
+                 }
+               }
+               i++;
+    	   }
+    	);
+    }
+
+  function machinePlayer(){
+    if(player != ''){        
+      let id = Math.floor(Math.random()*9)+1;  
+      let el = document.getElementById(id);  
+		    if(el.innerHTML == ""){ 
+		      	updateArray(id);
+		      	setSymbol(el);		      	
+		      	return nextTurn();
+		    }else{
+		      	machinePlayer();
+		   }
+
+	}
+  }
+
+ function nextTurn(){ 
+ 	 turn = (turn == "X" ) ? "O":"X" ; 
+     document.getElementById('turno').innerHTML  = turn;
+ 	}
+
+
+ function paintWin(arrays){
+	 arrays.forEach( (id) => { 
+		document.getElementById(id).classList.add('winner');	
+	  }
+   )
+
+	let label = 'Perdiste'; 
+   if(turn == player){
+         label = 'Ganaste'
+   	  }
+	    swal({
+              title: label,
+              text: '¿Quieres jugar de nuevo?',
+              showCancelButton: true,
+              confirmButtonText: 'Sí',
+              cancelButtonText: 'No',
+              closeOnConfirm: true
+            }, function (ok) {
+              if (ok) {
+                  reset()
+              }
+            })
+   
+  
+
+ }
+
+  function setSymbol(el){ 
+   	el.innerHTML =  document.getElementById('LABEL'+turn).innerHTML /*turn;*/
+  }
+			 
+
+  function reset(){
+  	   OPTIONS.forEach( (el) => {
+                   el.innerHTML = '';
+                   el.classList.remove('winner');
+                   turn= '';
+                   document.getElementById('turno').innerHTML  = turn;
+                }) 
+  	  max_min = [0,0,0,0,0,0,0,0]; 
+  }
+
+	</script>
+</body>
+</html>
+ 

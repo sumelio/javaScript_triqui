@@ -1,0 +1,26 @@
+ 
+.table{
+	width: 330px;
+	margin-top: 40px; 
+  	justify-content: center;
+  	background: gray; 
+
+}
+ 
+ 
+.box{
+	height: 110px;
+	width: 110px;
+	background: #FFFFFF; 
+	text-align: center; 
+	padding-left: 10px
+	margin:10px;
+	 z-index: -1;
+}
+
+.box.winner{ 
+	background: #FF0000;
+}
+ 
+ 
+ 
